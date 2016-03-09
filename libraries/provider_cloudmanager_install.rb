@@ -23,29 +23,22 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerInstallProvider < Chef::Pr
     remote_file '/tmp/' + new_resource.file_name do
       source new_resource.base_url + new_resource.file_name
       checksum sha256
+      not_if { ::File.exist?('/mongodb_cloudmanager_install.done') }
     end
 
     # install the agent
     dpkg_package new_resource.file_name do
       action :install
       source '/tmp/' + new_resource.file_name
+      not_if { ::File.exist?('/mongodb_cloudmanager_install.done') }
     end
 
-    # edit the config
-
-    # make the mongodb data dar
-    # directory new_resource.data_dir do
-    #   owner 'mongodb'
-    #   group 'mongodb'
-    #   mode 00755
-    #   recursive true
-    #   action :create
-    # end
-
-    # start the service
-    # service 'mongodb-mms-automation-agent' do
-    #   supports :status => true
-    #   action [ :enable, :start ]
-    # end
+    # make a file to lock new version install
+    file '/mongodb_cloudmanager_install.done' do
+      owner 'root'
+      group 'root'
+      mode 00755
+      action :touch
+    end
   end
 end

@@ -15,7 +15,7 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureProvider < Chef::
         file = ::File.read(new_resource.config_file)
         text = file.gsub('mmsGroupId=', "mmsGroupId=#{new_resource.group_id}")
         replaced = text.gsub('mmsApiKey=', "mmsApiKey=#{new_resource.api_key}")
-        ::File.open(new_resource.config_file, 'w') {|f| f.print replaced}
+        ::File.open(new_resource.config_file, 'w') { |f| f.print replaced }
       end
     end
 
@@ -31,7 +31,7 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureProvider < Chef::
     # start the service
     service 'mongodb-mms-automation-agent' do
       supports :status => true
-      action [ :enable, :start ]
+      action [:enable, :start]
     end
   end
 end
