@@ -1,0 +1,25 @@
+# stupid OSX files
+.DS_Store
+
+# gem files
+.rake_test_cache
+vendor/*
+.bundle/*
+
+# Ignore Chef key files and secrets
+.chef/*.pem
+.chef/encrypted_data_bag_secret
+
+# ignore .kitchen files
+.kitchen
+
+# Ignore vendored cookbooks
+berks-cookbooks/*
+# Ignore graphs created by `berks viz`
+graph.png
+
+# emacs
+*~
+
+# vim
+*.sw[a-z]

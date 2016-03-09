@@ -1,0 +1,7 @@
+DEPENDENCIES
+  mongodb_cloudmanager
+    path: .
+    metadata: true
+
+GRAPH
+  mongodb_cloudmanager (0.1.0)
