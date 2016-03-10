@@ -28,6 +28,40 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureProvider < Chef::
       action :create
     end
 
+    # disable thp
+    template '/etc/init.d/disable-transparent-hugepages' do
+      cookbook 'mongodb_cloudmanager'
+      source 'disable-transparent-hugepages.erb'
+      owner 'root'
+      group 'root'
+      mode 00754
+    end
+
+    service '/etc/init.d/disable-transparent-hugepages' do
+      supports :status => true
+      action [ :enable, :start ]
+    end
+
+    # if we specify a disk then create an xfs volume and mount it in /data
+    # however we only do it if we have not done it before (we touch a file)
+    if new_resource.data_disk
+      filesystem 'mongodb_data' do
+        fstype 'xfs'
+        device new_resource.data_disk
+        mount new_resource.data_dir
+        action [:create, :enable, :mount]
+        not_if { ::File.exist?(new_resource.data_dir + '/disk_formatted.done') }
+      end
+
+      # touch a file to know when its not safe to format
+      file new_resource.data_dir + '/disk_formatted.done' do
+        owner 'root'
+        group 'root'
+        mode 00755
+        action :touch
+      end
+    end
+
     # start the service
     service 'mongodb-mms-automation-agent' do
       supports :status => true

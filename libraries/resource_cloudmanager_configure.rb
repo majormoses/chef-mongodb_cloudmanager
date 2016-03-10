@@ -8,5 +8,6 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureResource < Chef::
   attribute(:api_key, kind_of: String, default: nil)
   attribute(:config_file, kind_of: String, default: '/etc/mongodb-mms/automation-agent.config')
   attribute(:data_dir, kind_of: String, default: nil)
+  attribute(:data_disk, kind_of: String, default: nil)
   attribute(:group_id, kind_of: String, default: nil)
 end

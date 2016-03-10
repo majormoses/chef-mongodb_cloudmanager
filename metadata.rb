@@ -4,4 +4,6 @@ maintainer_email 'me@benabrams.it'
 license 'All rights reserved'
 description 'Installs/Configures mongodb_cloudmanager'
 long_description 'Installs/Configures mongodb_cloudmanager'
-version '0.1.0'
+version '0.2.1'
+
+depends 'filesystem'
