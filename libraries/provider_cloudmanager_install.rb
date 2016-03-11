@@ -26,6 +26,20 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerInstallProvider < Chef::Pr
       not_if { ::File.exist?('/mongodb_cloudmanager_install.done') }
     end
 
+    # disable thp
+    template '/etc/init.d/disable-transparent-hugepages' do
+      cookbook 'mongodb_cloudmanager'
+      source 'disable-transparent-hugepages.erb'
+      owner 'root'
+      group 'root'
+      mode 00754
+    end
+
+    service 'disable-transparent-hugepages' do
+      supports :status => true
+      action [:enable, :start]
+    end
+
     # install the agent
     dpkg_package new_resource.file_name do
       action :install

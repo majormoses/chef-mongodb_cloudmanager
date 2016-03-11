@@ -12,10 +12,18 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureProvider < Chef::
     # edit the config
     ruby_block 'edit_config' do
       block do
-        file = ::File.read(new_resource.config_file)
-        text = file.gsub('mmsGroupId=', "mmsGroupId=#{new_resource.group_id}")
-        replaced = text.gsub('mmsApiKey=', "mmsApiKey=#{new_resource.api_key}")
-        ::File.open(new_resource.config_file, 'w') { |f| f.print replaced }
+        unless ::File.exist?('/mms-config.done')
+          file = ::File.read(new_resource.config_file)
+          text = file.gsub('mmsGroupId=', "mmsGroupId=#{new_resource.group_id}")
+          replaced = text.gsub('mmsApiKey=', "mmsApiKey=#{new_resource.api_key}")
+          ::File.open(new_resource.config_file, 'w') { |f| f.print replaced }
+          file '/mms-config.done' do
+            owner 'root'
+            group 'root'
+            mode 00755
+            action :touch
+          end
+        end
       end
     end
 
@@ -26,20 +34,6 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureProvider < Chef::
       mode 00755
       recursive true
       action :create
-    end
-
-    # disable thp
-    template '/etc/init.d/disable-transparent-hugepages' do
-      cookbook 'mongodb_cloudmanager'
-      source 'disable-transparent-hugepages.erb'
-      owner 'root'
-      group 'root'
-      mode 00754
-    end
-
-    service '/etc/init.d/disable-transparent-hugepages' do
-      supports :status => true
-      action [ :enable, :start ]
     end
 
     # if we specify a disk then create an xfs volume and mount it in /data
@@ -59,6 +53,14 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerConfigureProvider < Chef::
         group 'root'
         mode 00755
         action :touch
+      end
+
+      directory new_resource.data_dir do
+        owner 'mongodb'
+        group 'mongodb'
+        mode 00755
+        recursive true
+        action :create
       end
     end
 
