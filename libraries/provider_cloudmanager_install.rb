@@ -35,9 +35,18 @@ class MongodbCloudManagerCookbook::MongodbCloudManagerInstallProvider < Chef::Pr
       mode 00754
     end
 
+    service 'mongodb-mms-automation-agent' do
+      provider Chef::Provider::Service::Upstart
+      action [:nothing]
+    end
+
     service 'disable-transparent-hugepages' do
-      supports :status => true
-      action [:enable, :start]
+      action :start
+      not_if do
+        f = '/sys/kernel/mm/transparent_hugepage/enabled'
+        !::File.readlines(f).grep('always madvise [never]').empty?
+      end
+      notifies :restart, 'service[mongodb-mms-automation-agent]', :delayed
     end
 
     # install the agent
