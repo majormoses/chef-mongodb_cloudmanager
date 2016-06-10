@@ -10,9 +10,11 @@ describe 'mongodb-mms-automation-agent service' do
     it { should be_file }
     it { should be_mode 644 }
   end
-  # the service should run
-  it 'should enable and start the mongodb-mms-automation-agent service' do
-    expect(service('mongodb-mms-automation-agent')).to be_enabled
-    expect(service('mongodb-mms-automation-agent')).to be_running
-  end
+end
+
+describe file '/mongodb_cloudmanager_install.done' do
+    it { should be_file }
+    it { should be_mode 755 }
+    it { should be_owned_by 'root' }
+    it { should be_grouped_into 'root' }
 end
